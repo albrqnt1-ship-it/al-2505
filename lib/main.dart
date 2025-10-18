@@ -32,11 +32,11 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   double _progress = 0;
   
-  // إعدادات السيرفر - اضبطها حسب سيرفرك
+  // إعدادات السيرفر
   final TextEditingController _ipController = TextEditingController(text: '192.168.21.90');
   final TextEditingController _portController = TextEditingController(text: '80');
   final TextEditingController _pathController = TextEditingController(text: '');
-  String _currentUrl = '';
+  String _currentUrl = 'http://192.168.21.90';
 
   @override
   void initState() {
@@ -63,10 +63,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _currentUrl = url;
       _isLoading = true;
-    });
-    
-    _controller.future.then((controller) {
-      controller.loadUrl(url);
     });
   }
 
@@ -153,6 +149,17 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
+          // شريط معلومات
+          Container(
+            padding: const EdgeInsets.all(12),
+            color: Colors.grey[100],
+            child: Text(
+              'السيرفر: $_currentUrl',
+              style: const TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          
           if (_isLoading && _progress > 0)
             LinearProgressIndicator(
               value: _progress,
