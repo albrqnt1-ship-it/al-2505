@@ -5,22 +5,35 @@ workflows:
       vars:
         PACKAGE_NAME: "com.naif.istirahat_albarq"
     scripts:
-      - name: Fix Flutter project structure
+      - name: Fix Flutter project
         script: |
-          echo "🔄 إصلاح هيكل مشروع Flutter..."
-          flutter create --org com.naif --project-name istirahat_albarq .
+          flutter create --org com.naif .
+          echo "✅ تم إصلاح هيكل المشروع"
+      
+      - name: Fix Android NDK Issue
+        script: |
+          echo "🔧 حل مشكلة Android NDK..."
+          # تحديث compileSdk و targetSdk إلى 34
+          sed -i.bak 's/compileSdk [0-9]*/compileSdk 34/g' android/app/build.gradle
+          sed -i.bak 's/targetSdkVersion [0-9]*/targetSdkVersion 34/g' android/app/build.gradle
+          sed -i.bak 's/compileSdkVersion [0-9]*/compileSdkVersion 34/g' android/app/build.gradle
+          echo "✅ تم تحديث إصدار Android SDK"
+      
       - name: Install dependencies
         script: |
           echo "📦 تثبيت dependencies..."
           flutter pub get
-      - name: Build Android APK
+      
+      - name: Build APK
         script: |
-          echo "🏗️ بناء APK..."
+          echo "🏗️ بدء بناء APK..."
           flutter build apk --release
-          echo "✅ البناء اكتمل!"
+          echo "✅ تم بناء APK بنجاح!"
+    
     artifacts:
       - build/app/outputs/flutter-apk/**/*.apk
+    
     publishing:
       email:
         recipients:
-          - nayfalhetar0@gmail.com
+          - your-email@gmail.com
