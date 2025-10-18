@@ -16,6 +16,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@gmail.com
-      github:
-        publish: true
+          - nayfalhetar0@gmail.com
