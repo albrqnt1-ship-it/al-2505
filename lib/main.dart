@@ -32,127 +32,103 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   double _progress = 0;
   
-  final List<String> _presetUrls = [
-    'http://192.168.21.90',
-    'http://localhost',
-    'http://127.0.0.1',
-    'asset://flutter_assets/assets/index.html',
-  ];
-  String _selectedUrl = 'http://192.168.21.90';
-  bool _enableJavaScript = true;
+  // إعدادات السيرفر - اضبطها حسب سيرفرك
+  final TextEditingController _ipController = TextEditingController(text: '192.168.21.90');
+  final TextEditingController _portController = TextEditingController(text: '80');
+  final TextEditingController _pathController = TextEditingController(text: '');
+  String _currentUrl = '';
 
   @override
   void initState() {
     super.initState();
-    _loadInitialURL();
+    _loadServer();
   }
 
-  void _loadInitialURL() {
-    _controller.future.then((controller) {
-      controller.loadUrl(_selectedUrl);
-    });
-  }
-
-  void _loadURL(String url) {
+  void _loadServer() {
+    String ip = _ipController.text.trim();
+    String port = _portController.text.trim();
+    String path = _pathController.text.trim();
+    
+    if (ip.isEmpty) return;
+    
+    String url = 'http://$ip';
+    if (port.isNotEmpty && port != '80') {
+      url += ':$port';
+    }
+    if (path.isNotEmpty) {
+      if (!path.startsWith('/')) path = '/$path';
+      url += path;
+    }
+    
     setState(() {
-      _selectedUrl = url;
+      _currentUrl = url;
       _isLoading = true;
     });
+    
     _controller.future.then((controller) {
       controller.loadUrl(url);
     });
   }
 
-  void _showSettings(BuildContext context) {
+  void _showServerSettings(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Row(
-                children: [
-                  Icon(Icons.settings, color: Colors.indigo),
-                  SizedBox(width: 10),
-                  Text('إعدادات المتصفح'),
-                ],
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'اختر الرابط:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    
-                    ..._presetUrls.map((url) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.link,
-                            color: _selectedUrl == url ? Colors.green : Colors.grey,
-                          ),
-                          title: Text(
-                            url,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: _selectedUrl == url ? Colors.green : Colors.black,
-                              fontWeight: _selectedUrl == url ? FontWeight.bold : FontWeight.normal,
-                            ),
-                          ),
-                          trailing: _selectedUrl == url 
-                              ? const Icon(Icons.check, color: Colors.green)
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _selectedUrl = url;
-                            });
-                            Navigator.pop(context);
-                            _loadURL(url);
-                          },
-                        ),
-                      );
-                    }).toList(),
-
-                    const SizedBox(height: 20),
-                    
-                    const Text(
-                      'الإعدادات:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    
-                    SwitchListTile(
-                      title: const Text('تفعيل JavaScript'),
-                      subtitle: const Text('للمواقع التفاعلية'),
-                      value: _enableJavaScript,
-                      onChanged: (value) {
-                        setState(() {
-                          _enableJavaScript = value;
-                        });
-                      },
-                    ),
-                  ],
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.computer, color: Colors.indigo),
+              SizedBox(width: 10),
+              Text('إعدادات السيرفر'),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _ipController,
+                  decoration: const InputDecoration(
+                    labelText: 'IP السيرفر',
+                    hintText: '192.168.21.90',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('إغلاق'),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: _portController,
+                  decoration: const InputDecoration(
+                    labelText: 'المنفذ',
+                    hintText: '80',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _loadURL(_selectedUrl);
-                  },
-                  child: const Text('تطبيق'),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: _pathController,
+                  decoration: const InputDecoration(
+                    labelText: 'المسار',
+                    hintText: '/admin أو /dashboard',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('إلغاء'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _loadServer();
+              },
+              child: const Text('اتصل'),
+            ),
+          ],
         );
       },
     );
@@ -162,33 +138,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🌩️ استراحة البرق نت - محلي'),
+        title: const Text('🌩️ استراحة البرق نت'),
         backgroundColor: Colors.indigo,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => _showSettings(context),
+            onPressed: () => _showServerSettings(context),
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadInitialURL,
+            onPressed: _loadServer,
           ),
         ],
       ),
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            color: Colors.grey[100],
-            child: Text(
-              'الرابط: $_selectedUrl',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          
           if (_isLoading && _progress > 0)
             LinearProgressIndicator(
               value: _progress,
@@ -197,62 +161,30 @@ class _HomePageState extends State<HomePage> {
             ),
           
           Expanded(
-            child: RefreshIndicator(
-              color: Colors.indigo,
-              onRefresh: () async {
-                final controller = await _controller.future;
-                controller.reload();
+            child: WebView(
+              initialUrl: _currentUrl,
+              javascriptMode: JavascriptMode.unrestricted,
+              onWebViewCreated: (WebViewController controller) {
+                _controller.complete(controller);
               },
-              child: WebView(
-                initialUrl: _selectedUrl,
-                javascriptMode: _enableJavaScript 
-                    ? JavascriptMode.unrestricted 
-                    : JavascriptMode.disabled,
-                onWebViewCreated: (WebViewController controller) {
-                  _controller.complete(controller);
-                },
-                onProgress: (int progress) {
-                  setState(() {
-                    _progress = progress / 100;
-                  });
-                },
-                onPageStarted: (String url) {
-                  setState(() {
-                    _isLoading = true;
-                  });
-                },
-                onPageFinished: (String url) {
-                  setState(() {
-                    _isLoading = false;
-                    _selectedUrl = url;
-                  });
-                },
-              ),
+              onProgress: (int progress) {
+                setState(() {
+                  _progress = progress / 100;
+                });
+              },
+              onPageStarted: (String url) {
+                setState(() {
+                  _isLoading = true;
+                });
+              },
+              onPageFinished: (String url) {
+                setState(() {
+                  _isLoading = false;
+                });
+              },
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.computer),
-              tooltip: 'الخادم المحلي',
-              onPressed: () => _loadURL('http://192.168.21.90'),
-            ),
-            IconButton(
-              icon: const Icon(Icons.home),
-              tooltip: 'الصفحة الرئيسية',
-              onPressed: () => _loadURL('asset://flutter_assets/assets/index.html'),
-            ),
-            IconButton(
-              icon: const Icon(Icons.settings),
-              tooltip: 'الإعدادات',
-              onPressed: () => _showSettings(context),
-            ),
-          ],
-        ),
       ),
     );
   }
