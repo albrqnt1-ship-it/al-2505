@@ -32,7 +32,6 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   double _progress = 0;
   
-  // الإعدادات
   final List<String> _presetUrls = [
     'http://192.168.21.90',
     'http://localhost',
@@ -82,7 +81,6 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // اختيار الرابط من القائمة
                     const Text(
                       'اختر الرابط:',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -121,7 +119,6 @@ class _HomePageState extends State<HomePage> {
 
                     const SizedBox(height: 20),
                     
-                    // إعدادات إضافية
                     const Text(
                       'الإعدادات:',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -168,12 +165,10 @@ class _HomePageState extends State<HomePage> {
         title: const Text('🌩️ استراحة البرق نت - محلي'),
         backgroundColor: Colors.indigo,
         actions: [
-          // زر الإعدادات
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => _showSettings(context),
           ),
-          // زر التحديث
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadInitialURL,
@@ -182,7 +177,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          // شريط معلومات الرابط الحالي
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -195,7 +189,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           
-          // شريط التقدم
           if (_isLoading && _progress > 0)
             LinearProgressIndicator(
               value: _progress,
@@ -203,7 +196,6 @@ class _HomePageState extends State<HomePage> {
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.indigo),
             ),
           
-          // WebView
           Expanded(
             child: RefreshIndicator(
               color: Colors.indigo,
@@ -240,7 +232,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      // أزرار سريعة للروابط
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
