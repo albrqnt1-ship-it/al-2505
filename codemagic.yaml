@@ -5,17 +5,15 @@ workflows:
       vars:
         PACKAGE_NAME: "com.naif.istirahat_albarq"
     scripts:
-      - name: Create Project
+      - name: Create Flutter Project
         script: flutter create --org com.naif .
       - name: Install Dependencies
         script: flutter pub get
-      - name: Build Simple APK
-        script: |
-          echo "🏗️ بناء تطبيق بسيط..."
-          flutter build apk --release
+      - name: Build Release APK
+        script: flutter build apk --release
     artifacts:
       - build/app/outputs/flutter-apk/**/*.apk
     publishing:
       email:
         recipients:
-          - albrqnt1@gmail.com
+          - nayfalhetar0@gmail.com
