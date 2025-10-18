@@ -5,9 +5,22 @@ workflows:
       vars:
         PACKAGE_NAME: "com.naif.istirahat_albarq"
     scripts:
+      - name: Fix Flutter project structure
+        script: |
+          echo "🔄 إصلاح هيكل مشروع Flutter..."
+          flutter create --org com.naif --project-name istirahat_albarq .
       - name: Install dependencies
-        script: flutter pub get
+        script: |
+          echo "📦 تثبيت dependencies..."
+          flutter pub get
       - name: Build Android APK
-        script: flutter build apk --release
+        script: |
+          echo "🏗️ بناء APK..."
+          flutter build apk --release
+          echo "✅ البناء اكتمل!"
     artifacts:
       - build/app/outputs/flutter-apk/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - your-email@gmail.com
