@@ -1,0 +1,16 @@
+name: istirahat_albarq
+description: تطبيق استراحة البرق نت بدون إنترنت
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.2.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/index.html
